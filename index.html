@@ -201,8 +201,8 @@ select.form-control option{background:var(--bg3)}
       <div id="cm-user-role" style="font-size:9px;color:var(--text3)">—</div>
     </div>
     <div style="display:flex;gap:4px;flex-shrink:0">
-      <span onclick="openFeatureSettings()" title="ตั้งค่า Module" style="cursor:pointer;font-size:14px;color:var(--text3);padding:3px;border-radius:4px;transition:.15s" onmouseover="this.style.color='var(--orange)'" onmouseout="this.style.color='var(--text3)'">⚙</span>
-      <span onclick="cmLogout()" title="ออกจากระบบ" style="cursor:pointer;font-size:14px;color:var(--text3);padding:3px;border-radius:4px;transition:.15s" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--text3)'">⏻</span>
+      <span onclick="openFeatureSettings()" title="ตั้งค่า Module & Dashboard" style="cursor:pointer;font-size:15px;color:var(--text3);padding:3px;border-radius:4px;transition:.15s" onmouseover="this.style.color='var(--orange)'" onmouseout="this.style.color='var(--text3)'">⚙</span>
+      <span onclick="cmLogout()" title="ออกจากระบบ" style="cursor:pointer;font-size:15px;color:var(--text3);padding:3px;border-radius:4px;transition:.15s" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--text3)'">⏻</span>
     </div>
   </div>
 
@@ -263,9 +263,11 @@ select.form-control option{background:var(--bg3)}
   <div class="nav-item" data-ft="ai" onclick="showView('report')"><span class="nav-icon">📈</span>Reports</div>
 
   <div class="sb-footer">
-    <div class="back-btn" onclick="goBack()">← กลับ Module Hub</div>
+    <div onclick="cmLogout()" style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:var(--r);cursor:pointer;font-size:12px;color:var(--red);margin-bottom:8px;transition:all .15s;border:1px solid rgba(239,68,68,.2);background:var(--red-dim)" onmouseover="this.style.background='rgba(239,68,68,.2)'" onmouseout="this.style.background='var(--red-dim)'">
+      <span style="font-size:14px">⏻</span> ออกจากระบบ
+    </div>
     <div style="color:var(--orange);font-family:var(--font-d);font-size:10px;font-weight:700">PSD Engineering Dept.</div>
-    <div style="font-size:10px">eNGINNo SBS v1.0 · 2026</div>
+    <div style="font-size:10px;color:var(--text3)">eNGINNo SBS Commercial v1.0 · 2026</div>
   </div>
 </nav>
 
@@ -317,29 +319,29 @@ select.form-control option{background:var(--bg3)}
   </div>
 
   <div class="kpi-grid">
-    <div class="kpi orange"><div class="kpi-label">Total Assets</div><div class="kpi-value t-orange" id="d-assets">0</div><div class="kpi-sub">อุปกรณ์อาคาร</div><div class="kpi-icon">⚙</div></div>
-    <div class="kpi red"><div class="kpi-label">Open WR</div><div class="kpi-value t-red" id="d-wr">0</div><div class="kpi-sub">งานซ่อมค้าง</div><div class="kpi-icon">🔧</div></div>
-    <div class="kpi yellow"><div class="kpi-label">PPM Due</div><div class="kpi-value t-yellow" id="d-ppm">0</div><div class="kpi-sub">แผน PM เดือนนี้</div><div class="kpi-icon">📅</div></div>
-    <div class="kpi teal"><div class="kpi-label">Energy (kWh/d)</div><div class="kpi-value t-teal" id="d-kwh">0</div><div class="kpi-sub">พลังงานวันนี้</div><div class="kpi-icon">⚡</div></div>
-    <div class="kpi green"><div class="kpi-label">Tenant Active</div><div class="kpi-value t-green" id="d-tenant">0</div><div class="kpi-sub">ผู้เช่าทั้งหมด</div><div class="kpi-icon">👥</div></div>
+    <div class="kpi orange" data-dash="kpi_assets"><div class="kpi-label">Total Assets</div><div class="kpi-value t-orange" id="d-assets">0</div><div class="kpi-sub">อุปกรณ์อาคาร</div><div class="kpi-icon">⚙</div></div>
+    <div class="kpi red"    data-dash="kpi_wr"><div class="kpi-label">Open WR</div><div class="kpi-value t-red" id="d-wr">0</div><div class="kpi-sub">งานซ่อมค้าง</div><div class="kpi-icon">🔧</div></div>
+    <div class="kpi yellow" data-dash="kpi_ppm"><div class="kpi-label">PPM Due</div><div class="kpi-value t-yellow" id="d-ppm">0</div><div class="kpi-sub">แผน PM เดือนนี้</div><div class="kpi-icon">📅</div></div>
+    <div class="kpi teal"   data-dash="kpi_energy"><div class="kpi-label">Energy (kWh/d)</div><div class="kpi-value t-teal" id="d-kwh">0</div><div class="kpi-sub">พลังงานวันนี้</div><div class="kpi-icon">⚡</div></div>
+    <div class="kpi green"  data-dash="kpi_tenant"><div class="kpi-label">Tenant Active</div><div class="kpi-value t-green" id="d-tenant">0</div><div class="kpi-sub">ผู้เช่าทั้งหมด</div><div class="kpi-icon">👥</div></div>
   </div>
   <div class="kpi-grid-4">
-    <div class="kpi blue"><div class="kpi-label">Avg MTTR</div><div class="kpi-value t-blue" id="d-mttr">—h</div><div class="kpi-sub">ชั่วโมงซ่อมเฉลี่ย</div></div>
-    <div class="kpi purple"><div class="kpi-label">Parking Occ.</div><div class="kpi-value t-purple" id="d-park">0%</div><div class="kpi-sub">ที่จอดรถที่ใช้งาน</div></div>
-    <div class="kpi cyan"><div class="kpi-label">Monthly Revenue</div><div class="kpi-value t-teal" style="font-size:18px" id="d-rev">฿0</div><div class="kpi-sub">รายได้ค่าเช่า</div></div>
-    <div class="kpi green"><div class="kpi-label">Safe Days</div><div class="kpi-value t-green" id="d-safe">180</div><div class="kpi-sub">วันปลอดอุบัติเหตุ</div></div>
+    <div class="kpi blue"   data-dash="kpi_mttr"><div class="kpi-label">Avg MTTR</div><div class="kpi-value t-blue" id="d-mttr">—h</div><div class="kpi-sub">ชั่วโมงซ่อมเฉลี่ย</div></div>
+    <div class="kpi purple" data-dash="kpi_parking"><div class="kpi-label">Parking Occ.</div><div class="kpi-value t-purple" id="d-park">0%</div><div class="kpi-sub">ที่จอดรถที่ใช้งาน</div></div>
+    <div class="kpi cyan"   data-dash="kpi_revenue"><div class="kpi-label">Monthly Revenue</div><div class="kpi-value t-teal" style="font-size:18px" id="d-rev">฿0</div><div class="kpi-sub">รายได้ค่าเช่า</div></div>
+    <div class="kpi green"  data-dash="kpi_safety"><div class="kpi-label">Safe Days</div><div class="kpi-value t-green" id="d-safe">180</div><div class="kpi-sub">วันปลอดอุบัติเหตุ</div></div>
   </div>
 
   <div class="grid-2 mb-16">
-    <div class="card"><div class="ff-d fw-6" style="font-size:14px;margin-bottom:12px">🔧 WR Status & MTTR Trend</div><div class="chart-wrap"><canvas id="c-wr"></canvas></div></div>
-    <div class="card"><div class="ff-d fw-6" style="font-size:14px;margin-bottom:12px">⚡ Energy 7-Day Trend</div><div class="chart-wrap"><canvas id="c-energy"></canvas></div></div>
+    <div class="card" data-dash="chart_wr"><div class="ff-d fw-6" style="font-size:14px;margin-bottom:12px">🔧 WR Status & MTTR Trend</div><div class="chart-wrap"><canvas id="c-wr"></canvas></div></div>
+    <div class="card" data-dash="chart_energy"><div class="ff-d fw-6" style="font-size:14px;margin-bottom:12px">⚡ Energy 7-Day Trend</div><div class="chart-wrap"><canvas id="c-energy"></canvas></div></div>
   </div>
   <div class="grid-3">
-    <div class="card"><div class="ff-d fw-6" style="font-size:14px;margin-bottom:10px">⚙ Asset Condition</div><div class="chart-wrap" style="height:180px"><canvas id="c-asset"></canvas></div></div>
-    <div class="card"><div class="ff-d fw-6" style="font-size:14px;margin-bottom:10px">🏬 Tenant Occupancy</div>
+    <div class="card" data-dash="chart_asset"><div class="ff-d fw-6" style="font-size:14px;margin-bottom:10px">⚙ Asset Condition</div><div class="chart-wrap" style="height:180px"><canvas id="c-asset"></canvas></div></div>
+    <div class="card" data-dash="widget_tenant"><div class="ff-d fw-6" style="font-size:14px;margin-bottom:10px">🏬 Tenant Occupancy</div>
       <div id="tenant-occ-list"></div>
     </div>
-    <div class="card"><div class="ff-d fw-6" style="font-size:14px;margin-bottom:10px">🔔 Active Alerts</div><div id="alerts-dash"></div></div>
+    <div class="card" data-dash="widget_alerts"><div class="ff-d fw-6" style="font-size:14px;margin-bottom:10px">🔔 Active Alerts</div><div id="alerts-dash"></div></div>
   </div>
 </div>
 
@@ -1465,29 +1467,51 @@ select.form-control option{background:var(--bg3)}
 
 <!-- FEATURE SETTINGS MODAL -->
 <div class="modal-overlay" id="featureSettingsModal">
-  <div class="modal" style="width:520px">
+  <div class="modal" style="width:560px;max-height:85vh;overflow-y:auto">
     <div class="modal-hdr">
-      <div class="modal-title">⚙ ตั้งค่า Module — Feature Toggle</div>
+      <div class="modal-title">⚙ ตั้งค่า — Module & Dashboard</div>
       <button class="btn btn-secondary btn-sm" onclick="closeModal('featureSettingsModal')">✕</button>
     </div>
-    <div style="font-size:11px;color:var(--text3);margin-bottom:14px">
-      เปิด/ปิดการแสดงเมนูแต่ละ Module — Admin เห็นทั้งหมด · ผู้ใช้เห็นเฉพาะที่เปิดไว้
+
+    <!-- Tabs -->
+    <div class="tabs" id="ft-tabs" style="margin-bottom:14px">
+      <div class="tab active" id="ftt-module"    onclick="switchFTTab('module')">🧩 Module Menu</div>
+      <div class="tab"        id="ftt-dashboard" onclick="switchFTTab('dashboard')">📊 Dashboard Widgets</div>
     </div>
 
-    <div id="feature-toggle-list"></div>
-
-    <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;margin-top:14px;font-size:11px;color:var(--text3)">
-      💡 <strong>Admin</strong> เห็นทุก Module เสมอ · ผู้ใช้อื่นเห็นเฉพาะ Module ที่เปิดไว้ตั้งแต่ Register
-    </div>
-
-    <div class="flex gap-8 mt-16" style="justify-content:space-between">
-      <div class="flex gap-8">
-        <button class="btn btn-secondary btn-sm" onclick="setAllFeatures(true)">✅ เปิดทั้งหมด</button>
-        <button class="btn btn-secondary btn-sm" onclick="setAllFeatures(false)">❌ ปิดทั้งหมด</button>
+    <!-- Module Pane -->
+    <div id="ft-pane-module">
+      <div style="font-size:11px;color:var(--text3);margin-bottom:12px">เปิด/ปิดเมนูแต่ละ Module — Admin เห็นทั้งหมด · ผู้ใช้เห็นเฉพาะที่เปิดไว้</div>
+      <div id="feature-toggle-list"></div>
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;margin-top:12px;font-size:11px;color:var(--text3)">
+        💡 Admin เห็นทุก Module · ผู้ใช้เห็นเฉพาะที่เปิดไว้ตั้งแต่ Register
       </div>
-      <div class="flex gap-8">
-        <button class="btn btn-secondary" onclick="closeModal('featureSettingsModal')">ยกเลิก</button>
-        <button class="btn btn-primary" onclick="saveFeatureSettings()">💾 บันทึก</button>
+      <div class="flex gap-8 mt-14" style="justify-content:space-between">
+        <div class="flex gap-8">
+          <button class="btn btn-secondary btn-sm" onclick="setAllFeatures(true)">✅ เปิดทั้งหมด</button>
+          <button class="btn btn-secondary btn-sm" onclick="setAllFeatures(false)">❌ ปิดทั้งหมด</button>
+        </div>
+        <button class="btn btn-primary" onclick="saveFeatureSettings()">💾 บันทึก Module</button>
+      </div>
+    </div>
+
+    <!-- Dashboard Pane -->
+    <div id="ft-pane-dashboard" style="display:none">
+      <div style="font-size:11px;color:var(--text3);margin-bottom:12px">เลือก Widget ที่ต้องการแสดงใน Dashboard — ซ่อน Widget ที่ยังไม่มีข้อมูล</div>
+
+      <!-- KPI Cards -->
+      <div style="font-size:10px;font-weight:700;color:var(--orange);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px">📊 KPI Cards</div>
+      <div id="dash-widget-list"></div>
+
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;margin-top:12px;font-size:11px;color:var(--text3)">
+        💡 ซ่อน Widget ที่ยังไม่มีข้อมูล เช่น Energy, Parking, Tenant Revenue
+      </div>
+      <div class="flex gap-8 mt-14" style="justify-content:space-between">
+        <div class="flex gap-8">
+          <button class="btn btn-secondary btn-sm" onclick="setAllDashWidgets(true)">✅ เปิดทั้งหมด</button>
+          <button class="btn btn-secondary btn-sm" onclick="setAllDashWidgets(false)">❌ ปิดทั้งหมด</button>
+        </div>
+        <button class="btn btn-primary" onclick="saveDashSettings()">💾 บันทึก Dashboard</button>
       </div>
     </div>
   </div>
@@ -1540,7 +1564,16 @@ function openModal(id){document.getElementById(id)?.classList.add('open');popula
 function closeModal(id){document.getElementById(id)?.classList.remove('open');}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.modal-overlay.open').forEach(m=>m.classList.remove('open'));});
 function exportXLS(data,name){if(!data.length){alert('ไม่มีข้อมูล');return;}const ws=XLSX.utils.json_to_sheet(data);const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,name);XLSX.writeFile(wb,`SBS_CM_${name}_${new Date().toISOString().split('T')[0]}.xlsx`);}
-function goBack(){window.close();if(!window.closed){window.location.href='eNGINNo_SBS_Main.html';}}
+function goBack(){
+  // ถ้าเปิดมาจาก Tab ใหม่ → ปิด Tab
+  // ถ้าเปิดโดยตรง → ไปหน้า Login แทน
+  if(window.history.length > 1 && document.referrer){
+    window.history.back();
+  } else {
+    // ไม่มีหน้าก่อนหน้า → กลับไป Main หรือ logout
+    cmLogout();
+  }
+}
 function changeBuilding(v){currentBuilding=v;document.getElementById('tb-bread').textContent='eNGINNo SBS › Commercial › '+v;refreshDash();}
 
 // ── NAVIGATION ──
@@ -3700,12 +3733,21 @@ function cmLoginSuccess(user){
 }
 
 function cmLogout(){
-  if(!confirm('ออกจากระบบ?')) return;
-  cmCurrentUser=null;
+  if(!confirm('ออกจากระบบ Commercial Module?')) return;
+  // ล้าง session ทั้งหมด
+  cmCurrentUser = null;
   localStorage.removeItem('cm_current_user');
-  document.getElementById('cm-login').style.display='flex';
-  document.getElementById('cm-user').value='';
-  document.getElementById('cm-pass').value='';
+  localStorage.removeItem('sbs_session'); // ล้าง session จาก Main ด้วย
+  // Reset UI
+  const loginEl = document.getElementById('cm-login');
+  if(loginEl) loginEl.style.display='flex';
+  document.getElementById('cm-user')?.value && (document.getElementById('cm-user').value='');
+  document.getElementById('cm-pass')?.value && (document.getElementById('cm-pass').value='');
+  document.getElementById('cm-login-err') && (document.getElementById('cm-login-err').style.display='none');
+  // Reset user bar
+  document.getElementById('cm-user-name') && (document.getElementById('cm-user-name').textContent='—');
+  document.getElementById('cm-user-role') && (document.getElementById('cm-user-role').textContent='—');
+  document.getElementById('cm-user-av')   && (document.getElementById('cm-user-av').textContent='?');
 }
 
 // ── INIT: ตรวจสอบ session ที่บันทึกไว้ ──
@@ -3727,6 +3769,76 @@ function checkCMSession(){
 
 
 // กำหนด Module ทั้งหมด
+// ════ DASHBOARD WIDGET CONFIG ════
+const DASH_WIDGETS = [
+  { id:'kpi_assets',   label:'⚙ Total Assets',        desc:'จำนวนอุปกรณ์อาคาร',          defaultOn:true  },
+  { id:'kpi_wr',       label:'🔧 Open WR',             desc:'งานซ่อมค้าง',                 defaultOn:true  },
+  { id:'kpi_ppm',      label:'📅 PPM Due',             desc:'แผน PM เดือนนี้',             defaultOn:true  },
+  { id:'kpi_energy',   label:'⚡ Energy (kWh/d)',      desc:'พลังงานไฟฟ้าวันนี้',          defaultOn:false },
+  { id:'kpi_tenant',   label:'👥 Tenant Active',       desc:'จำนวนผู้เช่า',                defaultOn:false },
+  { id:'kpi_mttr',     label:'⏱ Avg MTTR',            desc:'เวลาซ่อมเฉลี่ย (ชั่วโมง)',    defaultOn:true  },
+  { id:'kpi_parking',  label:'🚗 Parking Occ.',        desc:'อัตราการใช้ที่จอดรถ',         defaultOn:false },
+  { id:'kpi_revenue',  label:'💰 Monthly Revenue',     desc:'รายได้ค่าเช่ารายเดือน',       defaultOn:false },
+  { id:'kpi_safety',   label:'🛡 Safe Days',           desc:'วันปลอดอุบัติเหตุ',           defaultOn:true  },
+  { id:'chart_wr',     label:'📊 WR Status Chart',     desc:'กราฟสถานะ WR และ MTTR',       defaultOn:true  },
+  { id:'chart_energy', label:'⚡ Energy Trend Chart',  desc:'กราฟพลังงาน 7 วัน',           defaultOn:false },
+  { id:'chart_asset',  label:'⚙ Asset Condition',     desc:'สภาพอุปกรณ์ Pie Chart',       defaultOn:true  },
+  { id:'widget_tenant',label:'🏬 Tenant Occupancy',   desc:'รายการผู้เช่าและรายได้',       defaultOn:false },
+  { id:'widget_alerts',label:'🔔 Active Alerts',      desc:'การแจ้งเตือนล่าสุด',           defaultOn:true  },
+];
+const DASH_KEY = 'cm_dashboard_widgets';
+const DASH_SHEET_KEY = 'cm_dashboard_settings';
+
+function getDashWidgets(){
+  try{const s=JSON.parse(localStorage.getItem(DASH_KEY));if(s&&Object.keys(s).length>0)return s;}catch{}
+  const def={};DASH_WIDGETS.forEach(w=>{def[w.id]=w.defaultOn;});return def;
+}
+function applyDashWidgets(widgets){
+  document.querySelectorAll('[data-dash]').forEach(el=>{
+    const id=el.getAttribute('data-dash');
+    el.style.display=widgets[id]!==false?'':'none';
+  });
+  // Fix grids: hide empty grid-2 and grid-3 rows
+  ['grid-2','grid-3'].forEach(cls=>{
+    document.querySelectorAll('.'+cls).forEach(grid=>{
+      if(grid.closest('#view-dashboard')){
+        const hasVisible=[...grid.children].some(c=>c.style.display!=='none');
+        grid.style.display=hasVisible?'':'none';
+      }
+    });
+  });
+}
+async function saveDashSettings(){
+  const widgets={};
+  DASH_WIDGETS.forEach(w=>{const el=document.getElementById('dw-'+w.id);widgets[w.id]=el?el.checked:w.defaultOn;});
+  localStorage.setItem(DASH_KEY,JSON.stringify(widgets));
+  applyDashWidgets(widgets);
+  closeModal('featureSettingsModal');
+  showToast('⏳ บันทึก Dashboard Settings...');
+  const url=GASURL();
+  if(url){
+    try{
+      const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({action:'update',sheet:'Config',id:DASH_SHEET_KEY,
+          data:{key:DASH_SHEET_KEY,value:JSON.stringify(widgets),updatedBy:cmCurrentUser?.name||'Admin',updatedAt:new Date().toISOString()}})});
+      const d=await r.json();
+      if(!d.ok)await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({action:'insert',sheet:'Config',
+          data:{key:DASH_SHEET_KEY,value:JSON.stringify(widgets),updatedBy:cmCurrentUser?.name||'Admin',updatedAt:new Date().toISOString()}})});
+      showToast('✅ บันทึก Dashboard Settings สำเร็จ — ทุกคนจะเห็นเหมือนกัน');
+    }catch(e){showToast('⚠ Local OK แต่ Sheets ไม่สำเร็จ');}
+  }else{showToast('✅ บันทึก Dashboard Settings สำเร็จ');}
+}
+async function loadDashFromSheets(){
+  const url=GASURL();if(!url)return getDashWidgets();
+  try{
+    const r=await fetch(`${url}?action=query&sheet=Config&filter=${encodeURIComponent(JSON.stringify({key:DASH_SHEET_KEY}))}`);
+    const d=await r.json();
+    if(d.ok&&d.data?.length>0){const w=JSON.parse(d.data[0].value||'{}');if(Object.keys(w).length>0){localStorage.setItem(DASH_KEY,JSON.stringify(w));return w;}}
+  }catch{}
+  return getDashWidgets();
+}
+
 const MODULES = [
   // ── Group: Dashboards ──
   { id:'overview',    label:'📊 Dashboards',             desc:'Dashboard · Building Critical Status',         alwaysOn:true,  group:'dashboards' },
@@ -3895,12 +4007,53 @@ function openFeatureSettings(){
   openModal('featureSettingsModal');
 }
 
+function switchFTTab(tab){
+  ['module','dashboard'].forEach(t=>{
+    document.getElementById('ftt-'+t)?.classList.toggle('active',t===tab);
+    const p=document.getElementById('ft-pane-'+t);if(p)p.style.display=t===tab?'':'none';
+  });
+  if(tab==='dashboard') renderDashWidgets();
+}
+
+function renderDashWidgets(){
+  const widgets=getDashWidgets();
+  const groups=[
+    {label:'📊 KPI Cards — แถวที่ 1',ids:['kpi_assets','kpi_wr','kpi_ppm','kpi_energy','kpi_tenant']},
+    {label:'📊 KPI Cards — แถวที่ 2',ids:['kpi_mttr','kpi_parking','kpi_revenue','kpi_safety']},
+    {label:'📈 Charts',ids:['chart_wr','chart_energy','chart_asset']},
+    {label:'📋 Widgets',ids:['widget_tenant','widget_alerts']},
+  ];
+  const list=document.getElementById('dash-widget-list');if(!list)return;
+  list.innerHTML=groups.map(g=>`
+    <div style="margin-bottom:12px">
+      <div style="font-size:10px;font-weight:700;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px">${g.label}</div>
+      ${g.ids.map(id=>{
+        const w=DASH_WIDGETS.find(x=>x.id===id);if(!w)return '';
+        const on=widgets[id]!==false;
+        return '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-radius:var(--r);margin-bottom:4px;background:'+(on?'var(--bg3)':'var(--bg4)')+';border:1px solid '+(on?'var(--border2)':'var(--border)')+'">'+
+          '<div><div style="font-size:12px;font-weight:600;color:var(--text)">'+w.label+'</div><div style="font-size:10px;color:var(--text3);margin-top:1px">'+w.desc+'</div></div>'+
+          '<label class="toggle-switch" style="flex-shrink:0;margin-left:12px">'+
+          '<input type="checkbox" id="dw-'+id+'" '+(on?'checked':'')+' onchange="updateDWPreview(''+id+'',this.checked)">'+
+          '<span class="toggle-slider"></span></label></div>';
+      }).join('')}
+    </div>`).join('');
+}
+
 function updateFTPreview(modId, val){
   const row=document.querySelector(`#feature-toggle-list [id="ft-${modId}"]`)?.closest('div[style]');
   if(row){
     row.style.background=val?'var(--bg3)':'var(--bg4)';
     row.style.border=`1px solid ${val?'var(--border2)':'var(--border)'}`;
   }
+}
+
+function updateDWPreview(id,val){
+  const row=document.querySelector('#dw-'+id)?.closest('div[style*="border"]');
+  if(row){row.style.background=val?'var(--bg3)':'var(--bg4)';row.style.border='1px solid '+(val?'var(--border2)':'var(--border)');}
+}
+
+function setAllDashWidgets(val){
+  DASH_WIDGETS.forEach(w=>{const el=document.getElementById('dw-'+w.id);if(el)el.checked=val;});
 }
 
 function showToast(msg){
@@ -3914,16 +4067,17 @@ function showToast(msg){
 async function initFeatureToggle(isAdmin=false){
   let features;
   if(isAdmin){
-    // Admin โหลดจาก Sheets เพื่อ sync
     features = await loadFeaturesFromSheets();
-    // Admin เห็นทุก module เสมอ (override)
     MODULES.forEach(m=>{ features[m.id]=true; });
   } else {
-    // User ทั่วไป → โหลดจาก Sheets ก่อน (เห็นตาม Admin กำหนด)
     features = await loadFeaturesFromSheets();
     showToast('🔄 โหลด Module Settings จาก Sheets สำเร็จ');
   }
   applyFeatureToggle(features);
+
+  // โหลด Dashboard widgets จาก Sheets
+  const widgets = await loadDashFromSheets();
+  applyDashWidgets(widgets);
 }
 
 // ════ INIT ════
