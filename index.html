@@ -174,7 +174,15 @@ select.form-control option{background:var(--bg3)}
       <div style="font-size:11px;color:var(--text3);margin-top:4px">BHIRAJBURI · Township · BITEC · v1.0 · 2026</div>
     </div>
 
-    <!-- Auth Tabs -->
+    <!-- Session Notice (แสดงเมื่อมี session เก่า) -->
+    <div id="cm-session-notice" style="display:none;background:var(--blue-dim);border:1px solid var(--blue);border-radius:var(--r);padding:10px 14px;margin-bottom:12px;font-size:12px;color:var(--text)">
+      <div style="font-weight:600;margin-bottom:4px">🔄 พบ Session เก่า</div>
+      <div style="color:var(--text3)" id="cm-session-user-info">—</div>
+      <div class="flex gap-8 mt-8">
+        <button class="btn btn-primary btn-sm" onclick="resumeSession()">✅ ใช้ต่อ</button>
+        <button class="btn btn-secondary btn-sm" onclick="clearAndShowLogin()">🔄 เปลี่ยนบัญชี</button>
+      </div>
+    </div>
     <div style="display:flex;gap:2px;background:var(--bg3);border-radius:var(--r);padding:3px;margin-bottom:16px">
       <div id="cm-tab-login" onclick="switchCMTab('login')" style="flex:1;text-align:center;padding:8px;border-radius:6px;font-size:13px;cursor:pointer;background:var(--bg2);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,.4);font-weight:500">🔐 เข้าสู่ระบบ</div>
       <div id="cm-tab-reg"   onclick="switchCMTab('reg')"   style="flex:1;text-align:center;padding:8px;border-radius:6px;font-size:13px;cursor:pointer;color:var(--text2);font-weight:500">📝 ลงทะเบียน</div>
@@ -3875,34 +3883,46 @@ function cmLogout(){
 
 // ── INIT: ตรวจสอบ session ──
 function checkCMSession(){
-  // 1. Check saved CM session (น้อยกว่า 8 ชั่วโมง)
+  // แสดง Login screen ก่อนเสมอ
+  document.getElementById('cm-login').style.display='flex';
+
   try{
+    // ตรวจสอบ session เก่า
     const saved = JSON.parse(localStorage.getItem('cm_current_user')||'null');
     if(saved?.username && saved?.loginAt){
       const age = Date.now() - (saved.loginAt||0);
-      if(age < 8*3600*1000){ // ยังไม่ครบ 8 ชม.
-        cmLoginSuccess(saved);
+      if(age < 8*3600*1000){
+        // Session ยังใช้ได้ → แสดง notice ให้เลือก
+        const notice = document.getElementById('cm-session-notice');
+        const info = document.getElementById('cm-session-user-info');
+        if(notice && info){
+          info.textContent = `${saved.name||saved.username} · ${saved.role||'user'} · ${saved.dept||''}`;
+          notice.style.display = 'block';
+          // เก็บ saved user ไว้ใช้ถ้ากด "ใช้ต่อ"
+          window._savedSession = saved;
+        }
         return;
       } else {
-        localStorage.removeItem('cm_current_user'); // หมดอายุ
+        localStorage.removeItem('cm_current_user');
       }
     }
   }catch(e){}
+}
 
-  // 2. Check session จาก Main Hub (น้อยกว่า 4 ชั่วโมง)
-  try{
-    const mainSession = JSON.parse(localStorage.getItem('sbs_session')||'null');
-    if(mainSession?.user && mainSession?.ts){
-      const age = Date.now() - mainSession.ts;
-      if(age < 4*3600*1000){
-        cmLoginSuccess(mainSession.user);
-        return;
-      }
-    }
-  }catch(e){}
+function resumeSession(){
+  if(window._savedSession){
+    cmLoginSuccess(window._savedSession);
+  }
+}
 
-  // 3. ไม่มี session → แสดง Login
-  document.getElementById('cm-login').style.display='flex';
+function clearAndShowLogin(){
+  localStorage.removeItem('cm_current_user');
+  localStorage.removeItem('sbs_session');
+  window._savedSession = null;
+  document.getElementById('cm-session-notice').style.display='none';
+  document.getElementById('cm-user').value='';
+  document.getElementById('cm-pass').value='';
+  document.getElementById('cm-user').focus();
 }
 
 
@@ -4163,19 +4183,28 @@ function renderDashWidgets(){
     {label:'📋 Widgets',ids:['widget_tenant','widget_alerts']},
   ];
   const list=document.getElementById('dash-widget-list');if(!list)return;
-  list.innerHTML=groups.map(g=>`
-    <div style="margin-bottom:12px">
-      <div style="font-size:10px;font-weight:700;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px">${g.label}</div>
-      ${g.ids.map(id=>{
-        const w=DASH_WIDGETS.find(x=>x.id===id);if(!w)return '';
-        const on=widgets[id]!==false;
-        return '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-radius:var(--r);margin-bottom:4px;background:'+(on?'var(--bg3)':'var(--bg4)')+';border:1px solid '+(on?'var(--border2)':'var(--border)')+'">'+
-          '<div><div style="font-size:12px;font-weight:600;color:var(--text)">'+w.label+'</div><div style="font-size:10px;color:var(--text3);margin-top:1px">'+w.desc+'</div></div>'+
-          '<label class="toggle-switch" style="flex-shrink:0;margin-left:12px">'+
-          '<input type="checkbox" id="dw-'+id+'" '+(on?'checked':'')+' onchange="updateDWPreview(''+id+'',this.checked)">'+
-          '<span class="toggle-slider"></span></label></div>';
-      }).join('')}
-    </div>`).join('');
+  let html='';
+  groups.forEach(g=>{
+    html+='<div style="margin-bottom:12px">';
+    html+='<div style="font-size:10px;font-weight:700;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px">'+g.label+'</div>';
+    g.ids.forEach(id=>{
+      const w=DASH_WIDGETS.find(x=>x.id===id);if(!w)return;
+      const on=widgets[id]!==false;
+      const bg=on?'var(--bg3)':'var(--bg4)';
+      const bd=on?'var(--border2)':'var(--border)';
+      html+='<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-radius:var(--r);margin-bottom:4px;background:'+bg+';border:1px solid '+bd+'">';
+      html+='<div>';
+      html+='<div style="font-size:12px;font-weight:600;color:var(--text)">'+w.label+'</div>';
+      html+='<div style="font-size:10px;color:var(--text3);margin-top:1px">'+w.desc+'</div>';
+      html+='</div>';
+      html+='<label class="toggle-switch" style="flex-shrink:0;margin-left:12px">';
+      const chk=on?' checked':'';
+      html+='<input type="checkbox" id="dw-'+id+'"'+chk+' onchange="updateDWPreview(this.dataset.id,this.checked)" data-id="'+id+'">';
+      html+='<span class="toggle-slider"></span></label></div>';
+    });
+    html+='</div>';
+  });
+  list.innerHTML=html;
 }
 
 function updateFTPreview(modId, val){
