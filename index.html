@@ -166,20 +166,81 @@ select.form-control option{background:var(--bg3)}
 <body>
 
 <!-- ════ LOGIN SCREEN ════ -->
-<div id="cm-login" style="position:fixed;inset:0;background:var(--bg);z-index:999;display:flex;align-items:center;justify-content:center;padding:20px">
-  <div style="width:100%;max-width:420px">
-    <div style="text-align:center;margin-bottom:24px">
+<div id="cm-login" style="position:fixed;inset:0;background:var(--bg);z-index:999;display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto">
+  <div style="width:100%;max-width:460px">
+    <div style="text-align:center;margin-bottom:20px">
       <div style="font-family:var(--font-d);font-size:10px;font-weight:700;letter-spacing:3px;color:var(--orange);text-transform:uppercase;margin-bottom:6px">PSD ● eNGINNo SBS</div>
       <div style="font-family:var(--font-d);font-size:26px;font-weight:700;color:var(--text)">🏢 Commercial Module</div>
       <div style="font-size:11px;color:var(--text3);margin-top:4px">BHIRAJBURI · Township · BITEC · v1.0 · 2026</div>
     </div>
-    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);padding:24px">
-      <div id="cm-login-err" style="background:var(--red-dim);border:1px solid rgba(239,68,68,.3);color:var(--red);font-size:12px;padding:10px;border-radius:var(--r);margin-bottom:14px;display:none"></div>
-      <div class="form-group"><label class="form-label">Username</label><input class="form-control" id="cm-user" placeholder="ชื่อผู้ใช้" onkeydown="if(event.key==='Enter')cmLogin()"></div>
-      <div class="form-group"><label class="form-label">Password</label><input class="form-control" id="cm-pass" type="password" placeholder="รหัสผ่าน" onkeydown="if(event.key==='Enter')cmLogin()"></div>
-      <button class="btn btn-primary" style="width:100%;justify-content:center;padding:10px;font-size:14px;margin-top:4px" onclick="cmLogin()">🚀 เข้าสู่ระบบ</button>
-      <div style="text-align:center;margin-top:10px;font-size:11px;color:var(--text3)">
-        Admin: <span style="font-family:var(--font-m);color:var(--orange)">sbs_admin / psd@2026</span>
+
+    <!-- Auth Tabs -->
+    <div style="display:flex;gap:2px;background:var(--bg3);border-radius:var(--r);padding:3px;margin-bottom:16px">
+      <div id="cm-tab-login" onclick="switchCMTab('login')" style="flex:1;text-align:center;padding:8px;border-radius:6px;font-size:13px;cursor:pointer;background:var(--bg2);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,.4);font-weight:500">🔐 เข้าสู่ระบบ</div>
+      <div id="cm-tab-reg"   onclick="switchCMTab('reg')"   style="flex:1;text-align:center;padding:8px;border-radius:6px;font-size:13px;cursor:pointer;color:var(--text2);font-weight:500">📝 ลงทะเบียน</div>
+    </div>
+
+    <!-- LOGIN PANE -->
+    <div id="cm-pane-login">
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);padding:24px">
+        <div id="cm-login-err" style="background:var(--red-dim);border:1px solid rgba(239,68,68,.3);color:var(--red);font-size:12px;padding:10px;border-radius:var(--r);margin-bottom:14px;display:none"></div>
+        <div class="form-group"><label class="form-label">Username</label><input class="form-control" id="cm-user" placeholder="ชื่อผู้ใช้" onkeydown="if(event.key==='Enter')cmLogin()"></div>
+        <div class="form-group"><label class="form-label">Password</label><input class="form-control" id="cm-pass" type="password" placeholder="รหัสผ่าน" onkeydown="if(event.key==='Enter')cmLogin()"></div>
+        <button class="btn btn-primary" style="width:100%;justify-content:center;padding:10px;font-size:14px;margin-top:4px" onclick="cmLogin()">🚀 เข้าสู่ระบบ</button>
+        <div style="text-align:center;margin-top:10px;font-size:11px;color:var(--text3)">
+          Admin: <span style="font-family:var(--font-m);color:var(--orange)">sbs_admin / psd@2026</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- REGISTER PANE -->
+    <div id="cm-pane-reg" style="display:none">
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);padding:24px">
+        <div id="cm-reg-err" style="background:var(--red-dim);border:1px solid rgba(239,68,68,.3);color:var(--red);font-size:12px;padding:10px;border-radius:var(--r);margin-bottom:12px;display:none"></div>
+        <div id="cm-reg-ok" style="background:var(--green-dim);border:1px solid rgba(34,197,94,.3);color:var(--green);font-size:12px;padding:10px;border-radius:var(--r);margin-bottom:12px;display:none">✅ ส่งคำขอสำเร็จ! รอ Admin อนุมัติ</div>
+
+        <!-- CD Key -->
+        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:12px;margin-bottom:12px">
+          <div style="font-size:10px;font-weight:700;color:var(--orange);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px">🔑 CD Key / License Key</div>
+          <div style="display:flex;gap:8px">
+            <input class="form-control ff-m" id="cm-reg-cdkey" placeholder="SBS-XXXX-XXXX-XXXX" style="letter-spacing:1px">
+            <button class="btn btn-secondary btn-sm" onclick="verifyCMCDKey()">🔍 ตรวจสอบ</button>
+          </div>
+          <div id="cm-cdkey-status" style="font-size:11px;margin-top:6px;display:none"></div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div class="form-group"><label class="form-label">ชื่อ-นามสกุล *</label><input class="form-control" id="cm-reg-name" placeholder="ชื่อ นามสกุล"></div>
+          <div class="form-group"><label class="form-label">ตำแหน่ง</label><input class="form-control" id="cm-reg-pos" placeholder="Position"></div>
+          <div class="form-group"><label class="form-label">อีเมล *</label><input class="form-control" id="cm-reg-email" type="email" placeholder="email@psd.co.th"></div>
+          <div class="form-group"><label class="form-label">แผนก *</label>
+            <select class="form-control" id="cm-reg-dept">
+              <option value="">-- เลือกแผนก --</option>
+              <option>Engineering</option><option>Maintenance</option><option>Facility</option>
+              <option>Safety</option><option>Energy</option><option>Security</option><option>HR / Admin</option><option>IT</option>
+            </select>
+          </div>
+          <div class="form-group"><label class="form-label">อาคาร / Branch</label>
+            <select class="form-control" id="cm-reg-building">
+              <option value="">-- เลือกอาคาร --</option>
+              <option>BHIRAJBURI Commercial</option>
+              <option>PSD Township Hub</option>
+              <option>BITEC Bangna Hall</option>
+            </select>
+          </div>
+          <div class="form-group"><label class="form-label">Role ที่ขอ</label>
+            <select class="form-control" id="cm-reg-role">
+              <option value="viewer">Viewer — ดูข้อมูล</option>
+              <option value="technician">Technician — บันทึกงาน</option>
+              <option value="supervisor">Supervisor — อนุมัติ</option>
+              <option value="manager">Manager — จัดการระบบ</option>
+            </select>
+          </div>
+          <div class="form-group"><label class="form-label">Username *</label><input class="form-control" id="cm-reg-user" placeholder="ตั้ง username"></div>
+          <div class="form-group"><label class="form-label">Password *</label><input class="form-control" id="cm-reg-pass" type="password" placeholder="อย่างน้อย 6 ตัว"></div>
+        </div>
+        <button class="btn btn-success" style="width:100%;justify-content:center;padding:10px;font-size:14px;margin-top:8px" onclick="cmRegister()">✅ ส่งคำขอลงทะเบียน</button>
+        <div style="text-align:center;margin-top:8px;font-size:11px;color:var(--text3)">⚠ ต้องมี CD Key จาก PSD Engineering · Admin จะอนุมัติภายหลัง</div>
       </div>
     </div>
   </div>
@@ -3683,42 +3744,104 @@ renderWRTable = function(){
   renderWRPagination();
 };
 
-// ════════════════════════════════════════════════════
-//  COMMERCIAL MODULE — LOGIN SYSTEM
-// ════════════════════════════════════════════════════
-let cmCurrentUser = null;
+// ════ BUILT-IN CD KEYS ════
+const CM_CD_KEYS = {
+  'SBS-PSD1-2026-MAIN':{ type:'INTERNAL', active:true, to:'PSD Engineering' },
+  'SBS-COM1-2026-TEST':{ type:'TRIAL',    active:true, to:'Commercial Team'  },
+};
+
+function switchCMTab(tab){
+  ['login','reg'].forEach(t=>{
+    const tabEl=document.getElementById('cm-tab-'+t);
+    const paneEl=document.getElementById('cm-pane-'+t);
+    if(tabEl) tabEl.style.cssText=t===tab
+      ?'flex:1;text-align:center;padding:8px;border-radius:6px;font-size:13px;cursor:pointer;background:var(--bg2);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,.4);font-weight:500'
+      :'flex:1;text-align:center;padding:8px;border-radius:6px;font-size:13px;cursor:pointer;color:var(--text2);font-weight:500';
+    if(paneEl) paneEl.style.display=t===tab?'':'none';
+  });
+}
+
+function verifyCMCDKey(){
+  const key=document.getElementById('cm-reg-cdkey')?.value.trim().toUpperCase();
+  const el=document.getElementById('cm-cdkey-status');
+  if(!el) return;
+  // Check built-in + stored keys
+  const storedKeys=JSON.parse(localStorage.getItem('sbs_cdkeys')||'{}');
+  const allKeys={...CM_CD_KEYS,...storedKeys};
+  el.style.display='block';
+  if(allKeys[key]?.active){
+    el.style.color='var(--green)';
+    el.textContent='✅ Key ถูกต้อง — '+allKeys[key].to+' ('+allKeys[key].type+')';
+    el.dataset.valid='true';
+  } else {
+    el.style.color='var(--red)';
+    el.textContent='❌ Key ไม่ถูกต้องหรือหมดอายุ — ติดต่อ PSD Engineering';
+    el.dataset.valid='false';
+  }
+}
+
+function cmRegister(){
+  const cdEl=document.getElementById('cm-cdkey-status');
+  if(cdEl?.dataset.valid!=='true'){ alert('กรุณาตรวจสอบ CD Key ก่อน'); return; }
+  const name=document.getElementById('cm-reg-name')?.value.trim();
+  const email=document.getElementById('cm-reg-email')?.value.trim();
+  const dept=document.getElementById('cm-reg-dept')?.value;
+  const building=document.getElementById('cm-reg-building')?.value;
+  const uname=document.getElementById('cm-reg-user')?.value.trim();
+  const pass=document.getElementById('cm-reg-pass')?.value;
+  const role=document.getElementById('cm-reg-role')?.value;
+  const errEl=document.getElementById('cm-reg-err');
+  errEl.style.display='none';
+  if(!name||!email||!dept||!uname||!pass){ errEl.textContent='กรุณากรอกข้อมูลให้ครบ'; errEl.style.display='block'; return; }
+  if(pass.length<6){ errEl.textContent='Password ต้องมีอย่างน้อย 6 ตัวอักษร'; errEl.style.display='block'; return; }
+  const users=JSON.parse(localStorage.getItem('cm_users')||'[]');
+  if(users.find(u=>u.username===uname)){ errEl.textContent='Username นี้ถูกใช้แล้ว'; errEl.style.display='block'; return; }
+  users.push({
+    id:'CMU-'+Date.now(),username:uname,name,
+    pos:document.getElementById('cm-reg-pos')?.value||'',
+    email,dept,building,role,bg:'commercial',
+    ph:btoa(pass),status:'pending',
+    regDate:new Date().toISOString()
+  });
+  localStorage.setItem('cm_users',JSON.stringify(users));
+  document.getElementById('cm-reg-ok').style.display='block';
+  setTimeout(()=>switchCMTab('login'),2500);
+}
 
 function cmLogin(){
   const u=document.getElementById('cm-user').value.trim();
   const p=document.getElementById('cm-pass').value;
   const err=document.getElementById('cm-login-err');
   err.style.display='none';
+  if(!u||!p){ err.textContent='กรุณากรอก Username และ Password'; err.style.display='block'; return; }
 
-  // Check admin
-  const ADMIN={username:'sbs_admin',password:'psd@2026',name:'SBS Administrator',role:'admin',dept:'Engineering'};
-  if(u===ADMIN.username && p===ADMIN.password){ cmLoginSuccess(ADMIN); return; }
-
-  // Check users from Main localStorage
-  const users = JSON.parse(localStorage.getItem('sbs_users')||'[]');
-  const found = users.find(x=>x.username===u && atob(x.ph||'')===p && x.status==='approved' && (x.bg==='commercial'||x.bg==='ALL'));
-  if(found){ cmLoginSuccess(found); return; }
-
-  // Check session from Main (same origin)
-  const session = JSON.parse(localStorage.getItem('sbs_session')||'null');
-  if(session?.user && session.user.username===u){
-    // validate by checking sbs_users or admin
-    if(session.user.role==='admin'){ cmLoginSuccess(session.user); return; }
-    const found2=users.find(x=>x.username===u&&x.status==='approved');
-    if(found2){ cmLoginSuccess(found2); return; }
+  // 1. Admin hardcoded
+  if(u==='sbs_admin' && p==='psd@2026'){
+    cmLoginSuccess({username:'sbs_admin',name:'SBS Administrator',role:'admin',dept:'Engineering',bg:'ALL'});
+    return;
   }
+  // 2. Users จาก CM local
+  const cmUsers=JSON.parse(localStorage.getItem('cm_users')||'[]');
+  const cmFound=cmUsers.find(x=>x.username===u && atob(x.ph||'')===p && x.status==='approved');
+  if(cmFound){ cmLoginSuccess(cmFound); return; }
+  // 3. Users จาก Main SBS (cross-module)
+  const sbsUsers=JSON.parse(localStorage.getItem('sbs_users')||'[]');
+  const sbsFound=sbsUsers.find(x=>x.username===u && atob(x.ph||'')===p && x.status==='approved' && (x.bg==='commercial'||x.bg==='ALL'));
+  if(sbsFound){ cmLoginSuccess(sbsFound); return; }
+  // 4. ตรวจสอบ pending
+  const pending=[...cmUsers,...sbsUsers].find(x=>x.username===u&&x.status==='pending');
+  if(pending){ err.textContent='บัญชีของคุณยังรออนุมัติจาก Admin ครับ'; err.style.display='block'; return; }
 
-  err.textContent='Username หรือ Password ไม่ถูกต้อง หรือยังไม่ได้รับอนุมัติสำหรับ Commercial Module';
+  err.textContent='Username หรือ Password ไม่ถูกต้อง';
   err.style.display='block';
 }
 
+
 function cmLoginSuccess(user){
   cmCurrentUser=user;
-  localStorage.setItem('cm_current_user', JSON.stringify(user));
+  const sessionData={...user, loginAt:Date.now()};
+  localStorage.setItem('cm_current_user', JSON.stringify(sessionData));
+  // ซ่อน Login screen
   document.getElementById('cm-login').style.display='none';
   // Update user bar
   document.getElementById('cm-user-av').textContent=(user.name||'U')[0].toUpperCase();
@@ -3750,19 +3873,35 @@ function cmLogout(){
   document.getElementById('cm-user-av')   && (document.getElementById('cm-user-av').textContent='?');
 }
 
-// ── INIT: ตรวจสอบ session ที่บันทึกไว้ ──
+// ── INIT: ตรวจสอบ session ──
 function checkCMSession(){
-  // 1. Check saved session in this module
-  const saved = JSON.parse(localStorage.getItem('cm_current_user')||'null');
-  if(saved?.username){ cmLoginSuccess(saved); return; }
+  // 1. Check saved CM session (น้อยกว่า 8 ชั่วโมง)
+  try{
+    const saved = JSON.parse(localStorage.getItem('cm_current_user')||'null');
+    if(saved?.username && saved?.loginAt){
+      const age = Date.now() - (saved.loginAt||0);
+      if(age < 8*3600*1000){ // ยังไม่ครบ 8 ชม.
+        cmLoginSuccess(saved);
+        return;
+      } else {
+        localStorage.removeItem('cm_current_user'); // หมดอายุ
+      }
+    }
+  }catch(e){}
 
-  // 2. Check session from Main (opened via Module Hub)
-  const mainSession = JSON.parse(localStorage.getItem('sbs_session')||'null');
-  if(mainSession?.user && (Date.now()-mainSession.ts) < 8*3600*1000){ // valid 8 ชม.
-    cmLoginSuccess(mainSession.user); return;
-  }
+  // 2. Check session จาก Main Hub (น้อยกว่า 4 ชั่วโมง)
+  try{
+    const mainSession = JSON.parse(localStorage.getItem('sbs_session')||'null');
+    if(mainSession?.user && mainSession?.ts){
+      const age = Date.now() - mainSession.ts;
+      if(age < 4*3600*1000){
+        cmLoginSuccess(mainSession.user);
+        return;
+      }
+    }
+  }catch(e){}
 
-  // 3. Show login screen
+  // 3. ไม่มี session → แสดง Login
   document.getElementById('cm-login').style.display='flex';
 }
 
