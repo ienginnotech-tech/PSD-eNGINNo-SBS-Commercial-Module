@@ -330,6 +330,7 @@ select.form-control option{background:var(--bg3)}
   <div class="sb-section module-section" data-ft-section="ai">🤖 AI & Analytics</div>
   <div class="nav-item" data-ft="ai" onclick="showView('ai')"><span class="nav-icon">🤖</span>AI Analytics</div>
   <div class="nav-item" data-ft="ai" onclick="showView('report')"><span class="nav-icon">📈</span>Reports</div>
+  <div class="nav-item" data-ft="overview" onclick="showView('admin')" id="nav-admin" style="display:none"><span class="nav-icon">👨‍💼</span>Admin Management</div>
 
   <div class="sb-footer">
     <div onclick="cmLogout()" style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:var(--r);cursor:pointer;font-size:12px;color:var(--red);margin-bottom:8px;transition:all .15s;border:1px solid rgba(239,68,68,.2);background:var(--red-dim)" onmouseover="this.style.background='rgba(239,68,68,.2)'" onmouseout="this.style.background='var(--red-dim)'">
@@ -1160,6 +1161,132 @@ select.form-control option{background:var(--bg3)}
     <div class="kpi teal"><div class="kpi-label">รายได้(฿)</div><div class="kpi-value t-teal" style="font-size:18px" id="ev-rev">฿0</div></div>
   </div>
   <div class="table-wrap"><table><thead><tr><th>Event ID</th><th>ชื่อ Event</th><th>Hall</th><th>วันที่</th><th>เวลา</th><th>ผู้จอง</th><th>จำนวนคน</th><th>ค่าบริการ</th><th>สถานะ</th><th>Action</th></tr></thead><tbody id="event-tbody"></tbody></table></div>
+</div>
+
+<!-- ══════════ ADMIN MANAGEMENT ══════════ -->
+<div id="view-admin" class="view">
+  <div class="section-hdr">
+    <div><div class="section-title">👨‍💼 Admin Management</div><div class="section-sub">จัดการผู้ใช้ · อนุมัติคำขอ · CD Keys · สิทธิ์การเข้าถึง</div></div>
+    <div class="flex gap-8">
+      <button class="btn btn-secondary btn-sm" onclick="refreshAdminView()">↻ Refresh</button>
+      <button class="btn btn-primary btn-sm" onclick="openModal('addUserModal')">+ เพิ่มผู้ใช้</button>
+    </div>
+  </div>
+
+  <!-- KPI -->
+  <div class="kpi-grid-4 mb-16">
+    <div class="kpi blue"><div class="kpi-label">ผู้ใช้ทั้งหมด</div><div class="kpi-value t-blue" id="adm-total">0</div><div class="kpi-sub">All Users</div></div>
+    <div class="kpi yellow"><div class="kpi-label">รออนุมัติ</div><div class="kpi-value t-yellow" id="adm-pending">0</div><div class="kpi-sub">Pending Approval</div></div>
+    <div class="kpi green"><div class="kpi-label">อนุมัติแล้ว</div><div class="kpi-value t-green" id="adm-approved">0</div><div class="kpi-sub">Approved</div></div>
+    <div class="kpi red"><div class="kpi-label">ถูกระงับ</div><div class="kpi-value t-red" id="adm-rejected">0</div><div class="kpi-sub">Suspended</div></div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs mb-16" id="adm-tabs">
+    <div class="tab active" onclick="switchAdmTab('pending',this)">⏳ รออนุมัติ</div>
+    <div class="tab" onclick="switchAdmTab('approved',this)">✅ อนุมัติแล้ว</div>
+    <div class="tab" onclick="switchAdmTab('all',this)">👥 ผู้ใช้ทั้งหมด</div>
+    <div class="tab" onclick="switchAdmTab('cdkey',this)">🔑 CD Keys</div>
+  </div>
+
+  <!-- Pending Pane -->
+  <div id="adm-pane-pending">
+    <div class="card">
+      <div class="ff-d fw-6" style="font-size:13px;margin-bottom:12px">⏳ คำขอรออนุมัติ</div>
+      <div class="table-wrap">
+        <table><thead><tr><th>ชื่อ</th><th>Username</th><th>อีเมล</th><th>แผนก</th><th>อาคาร</th><th>Role ที่ขอ</th><th>วันที่ขอ</th><th>CD Key</th><th>Action</th></tr></thead>
+        <tbody id="adm-pending-tbody"></tbody></table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Approved Pane -->
+  <div id="adm-pane-approved" style="display:none">
+    <div class="card">
+      <div class="ff-d fw-6" style="font-size:13px;margin-bottom:12px">✅ ผู้ใช้ที่อนุมัติแล้ว</div>
+      <div class="table-wrap">
+        <table><thead><tr><th>ชื่อ</th><th>Username</th><th>อีเมล</th><th>แผนก</th><th>Role</th><th>อาคาร</th><th>Last Login</th><th>Action</th></tr></thead>
+        <tbody id="adm-approved-tbody"></tbody></table>
+      </div>
+    </div>
+  </div>
+
+  <!-- All Users Pane -->
+  <div id="adm-pane-all" style="display:none">
+    <div class="card">
+      <div class="ff-d fw-6" style="font-size:13px;margin-bottom:12px">👥 ผู้ใช้ทั้งหมด</div>
+      <div class="table-wrap">
+        <table><thead><tr><th>ชื่อ</th><th>Username</th><th>Role</th><th>แผนก</th><th>สถานะ</th><th>วันที่สมัคร</th><th>Action</th></tr></thead>
+        <tbody id="adm-all-tbody"></tbody></table>
+      </div>
+    </div>
+  </div>
+
+  <!-- CD Keys Pane -->
+  <div id="adm-pane-cdkey" style="display:none">
+    <div class="grid-2 mb-16">
+      <!-- Generate Key -->
+      <div class="card">
+        <div class="ff-d fw-6" style="font-size:13px;margin-bottom:12px">🔑 สร้าง CD Key ใหม่</div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">ประเภท Key</label>
+            <select class="form-control" id="cdk-type">
+              <option value="INTERNAL">INTERNAL — ใช้ภายใน</option>
+              <option value="TRIAL">TRIAL — ทดลองใช้ 30 วัน</option>
+              <option value="PREMIUM">PREMIUM — Full Access</option>
+            </select>
+          </div>
+          <div class="form-group"><label class="form-label">มอบให้</label>
+            <input class="form-control" id="cdk-to" placeholder="ชื่อแผนก/บุคคล">
+          </div>
+        </div>
+        <div class="form-group"><label class="form-label">หมายเหตุ</label>
+          <input class="form-control" id="cdk-note" placeholder="วัตถุประสงค์การใช้งาน">
+        </div>
+        <button class="btn btn-primary" onclick="generateCDKey()">🔑 สร้าง CD Key</button>
+        <div id="cdk-result" style="margin-top:10px;font-size:12px"></div>
+      </div>
+
+      <!-- Key List -->
+      <div class="card">
+        <div class="ff-d fw-6" style="font-size:13px;margin-bottom:12px">📋 CD Keys ที่สร้างแล้ว</div>
+        <div id="cdk-list" style="max-height:280px;overflow-y:auto"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ADD USER MODAL -->
+<div class="modal-overlay" id="addUserModal">
+  <div class="modal modal-lg">
+    <div class="modal-hdr"><div class="modal-title">➕ เพิ่มผู้ใช้ (Admin)</div><button class="btn btn-secondary btn-sm" onclick="closeModal('addUserModal')">✕</button></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="form-group"><label class="form-label">ชื่อ-นามสกุล *</label><input class="form-control" id="au-name" placeholder="ชื่อ นามสกุล"></div>
+      <div class="form-group"><label class="form-label">Username *</label><input class="form-control" id="au-user" placeholder="username"></div>
+      <div class="form-group"><label class="form-label">Password *</label><input class="form-control" id="au-pass" type="password" placeholder="อย่างน้อย 6 ตัว"></div>
+      <div class="form-group"><label class="form-label">อีเมล</label><input class="form-control" id="au-email" type="email" placeholder="email@psd.co.th"></div>
+      <div class="form-group"><label class="form-label">แผนก</label>
+        <select class="form-control" id="au-dept">
+          <option>Engineering</option><option>Maintenance</option><option>Facility</option>
+          <option>Safety</option><option>Energy</option><option>Security</option><option>HR / Admin</option><option>IT</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">Role</label>
+        <select class="form-control" id="au-role">
+          <option value="viewer">Viewer</option><option value="technician">Technician</option>
+          <option value="supervisor">Supervisor</option><option value="manager">Manager</option><option value="admin">Admin</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">ตำแหน่ง</label><input class="form-control" id="au-pos" placeholder="Position"></div>
+      <div class="form-group"><label class="form-label">อาคาร</label>
+        <select class="form-control" id="au-building"></select>
+      </div>
+    </div>
+    <div class="flex gap-8 mt-16" style="justify-content:flex-end">
+      <button class="btn btn-secondary" onclick="closeModal('addUserModal')">ยกเลิก</button>
+      <button class="btn btn-primary" onclick="adminAddUser()">➕ เพิ่มผู้ใช้</button>
+    </div>
+  </div>
 </div>
 
 <!-- ══════════ AI ══════════ -->
@@ -3922,6 +4049,9 @@ function cmLoginSuccess(user){
   document.getElementById('cm-user-role').textContent=(user.role||'user').toUpperCase()+(user.dept?' · '+user.dept:'');
   // Apply feature toggle based on role
   initFeatureToggle(user.role==='admin');
+  // Show admin nav only for admin
+  const admNav=document.getElementById('nav-admin');
+  if(admNav) admNav.style.display=user.role==='admin'?'':'none';
   seedData();
   refreshDash();
   const today=new Date().toISOString().split('T')[0];
@@ -4490,6 +4620,224 @@ async function initFeatureToggle(isAdmin=false){
   applyReportToggle(reports);
   // โหลด Buildings
   updateBuildingDropdowns();
+}
+
+
+// ════════════════════════════════════════════════════
+//  ADMIN MANAGEMENT
+// ════════════════════════════════════════════════════
+TITLES['admin']='Admin Management';
+// Register admin view in showView
+const _origShowViewAdmin = showView;
+showView = function(name){
+  _origShowViewAdmin(name);
+  if(name==='admin') refreshAdminView();
+};
+
+function getAllUsers(){
+  const cm=JSON.parse(localStorage.getItem('cm_users')||'[]');
+  const sbs=JSON.parse(localStorage.getItem('sbs_users')||'[]').filter(u=>u.bg==='commercial'||u.bg==='ALL');
+  // Merge, cm_users takes priority
+  const cmIds=new Set(cm.map(u=>u.username));
+  return [...cm,...sbs.filter(u=>!cmIds.has(u.username))];
+}
+
+function saveAllUsers(users){
+  localStorage.setItem('cm_users',JSON.stringify(users));
+}
+
+function refreshAdminView(){
+  const users=getAllUsers();
+  const pending=users.filter(u=>u.status==='pending');
+  const approved=users.filter(u=>u.status==='approved');
+  const rejected=users.filter(u=>u.status==='rejected'||u.status==='suspended');
+
+  document.getElementById('adm-total').textContent=users.length;
+  document.getElementById('adm-pending').textContent=pending.length;
+  document.getElementById('adm-approved').textContent=approved.length;
+  document.getElementById('adm-rejected').textContent=rejected.length;
+
+  const roleColor={admin:'bg-red',manager:'bg-orange',supervisor:'bg-blue',technician:'bg-teal',viewer:'bg-gray'};
+  const stColor={pending:'bg-yellow',approved:'bg-green',rejected:'bg-red',suspended:'bg-red'};
+
+  // Pending table
+  document.getElementById('adm-pending-tbody').innerHTML=pending.length?pending.map(u=>`
+    <tr>
+      <td class="fw-6">${u.name||'—'}</td>
+      <td class="ff-m">${u.username}</td>
+      <td style="font-size:11px">${u.email||'—'}</td>
+      <td style="font-size:11px">${u.dept||'—'}</td>
+      <td style="font-size:11px">${u.building||'—'}</td>
+      <td><span class="badge ${roleColor[u.role]||'bg-gray'}">${u.role||'viewer'}</span></td>
+      <td class="ff-m" style="font-size:11px">${(u.regDate||'').slice(0,10)}</td>
+      <td class="ff-m" style="font-size:11px">${u.cdkey||'—'}</td>
+      <td>
+        <div class="flex gap-4">
+          <button class="btn btn-success btn-sm" onclick="approveUser('${u.username}')">✅ อนุมัติ</button>
+          <button class="btn btn-danger btn-sm" onclick="rejectUser('${u.username}')">❌ ปฏิเสธ</button>
+        </div>
+      </td>
+    </tr>`).join('')
+    :'<tr><td colspan="9" style="text-align:center;padding:20px;color:var(--text3)">✅ ไม่มีคำขอรออนุมัติ</td></tr>';
+
+  // Approved table
+  document.getElementById('adm-approved-tbody').innerHTML=approved.map(u=>`
+    <tr>
+      <td class="fw-6">${u.name||'—'}</td>
+      <td class="ff-m">${u.username}</td>
+      <td style="font-size:11px">${u.email||'—'}</td>
+      <td style="font-size:11px">${u.dept||'—'}</td>
+      <td><span class="badge ${roleColor[u.role]||'bg-gray'}">${u.role||'viewer'}</span></td>
+      <td style="font-size:11px">${u.building||'—'}</td>
+      <td class="ff-m" style="font-size:11px">${u.lastLogin?u.lastLogin.slice(0,10):'—'}</td>
+      <td>
+        <div class="flex gap-4">
+          <button class="btn btn-secondary btn-sm" onclick="changeRole('${u.username}')">🔧 Role</button>
+          <button class="btn btn-danger btn-sm" onclick="suspendUser('${u.username}')">⏸ ระงับ</button>
+        </div>
+      </td>
+    </tr>`).join('')||'<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--text3)">ยังไม่มีผู้ใช้</td></tr>';
+
+  // All users table
+  document.getElementById('adm-all-tbody').innerHTML=users.map(u=>`
+    <tr>
+      <td class="fw-6">${u.name||'—'}</td>
+      <td class="ff-m">${u.username}</td>
+      <td><span class="badge ${roleColor[u.role]||'bg-gray'}">${u.role||'viewer'}</span></td>
+      <td style="font-size:11px">${u.dept||'—'}</td>
+      <td><span class="badge ${stColor[u.status]||'bg-gray'}">${u.status||'—'}</span></td>
+      <td class="ff-m" style="font-size:11px">${(u.regDate||'').slice(0,10)}</td>
+      <td>
+        <button class="btn btn-danger btn-sm" onclick="deleteUser('${u.username}')">🗑</button>
+      </td>
+    </tr>`).join('');
+
+  // Update nav badge
+  const nb=document.getElementById('nav-admin');
+  if(nb&&pending.length>0) nb.innerHTML='<span class="nav-icon">👨‍💼</span>Admin Management<span class="nav-badge">'+pending.length+'</span>';
+  // Populate building dropdown in Add User modal
+  const bldSel=document.getElementById('au-building');
+  if(bldSel){
+    bldSel.innerHTML=getBuildings().filter(b=>b.active).map(b=>'<option value="'+b.name+'">'+b.icon+' '+b.name+'</option>').join('');
+  }
+
+  renderCDKeys();
+}
+
+function approveUser(username){
+  const users=JSON.parse(localStorage.getItem('cm_users')||'[]');
+  const u=users.find(x=>x.username===username);
+  if(u){u.status='approved';u.approvedAt=new Date().toISOString();u.approvedBy=cmCurrentUser?.name||'Admin';}
+  saveAllUsers(users);refreshAdminView();
+  showToast('✅ อนุมัติ "'+username+'" สำเร็จ');
+}
+
+function rejectUser(username){
+  const reason=prompt('เหตุผลที่ปฏิเสธ (optional):');
+  const users=JSON.parse(localStorage.getItem('cm_users')||'[]');
+  const u=users.find(x=>x.username===username);
+  if(u){u.status='rejected';u.rejectedAt=new Date().toISOString();u.rejectReason=reason||'';}
+  saveAllUsers(users);refreshAdminView();
+  showToast('❌ ปฏิเสธ "'+username+'" แล้ว');
+}
+
+function suspendUser(username){
+  if(!confirm('ระงับบัญชี "'+username+'"?'))return;
+  const users=JSON.parse(localStorage.getItem('cm_users')||'[]');
+  const u=users.find(x=>x.username===username);
+  if(u)u.status='suspended';
+  saveAllUsers(users);refreshAdminView();
+  showToast('⏸ ระงับบัญชี "'+username+'" แล้ว');
+}
+
+function changeRole(username){
+  const roles=['viewer','technician','supervisor','manager','admin'];
+  const users=JSON.parse(localStorage.getItem('cm_users')||'[]');
+  const u=users.find(x=>x.username===username);
+  if(!u)return;
+  const cur=u.role||'viewer';
+  const newRole=prompt('เปลี่ยน Role ของ "'+username+'" (ปัจจุบัน: '+cur+')\nตัวเลือก: '+roles.join(', '));
+  if(!newRole||!roles.includes(newRole)){alert('Role ไม่ถูกต้อง');return;}
+  u.role=newRole;saveAllUsers(users);refreshAdminView();
+  showToast('🔧 เปลี่ยน Role "'+username+'" เป็น '+newRole);
+}
+
+function deleteUser(username){
+  if(!confirm('ลบบัญชี "'+username+'" ? ไม่สามารถกู้คืนได้'))return;
+  const users=JSON.parse(localStorage.getItem('cm_users')||'[]');
+  saveAllUsers(users.filter(u=>u.username!==username));
+  refreshAdminView();showToast('🗑 ลบ "'+username+'" แล้ว');
+}
+
+function adminAddUser(){
+  const name=document.getElementById('au-name')?.value.trim();
+  const username=document.getElementById('au-user')?.value.trim();
+  const pass=document.getElementById('au-pass')?.value;
+  const email=document.getElementById('au-email')?.value.trim();
+  const dept=document.getElementById('au-dept')?.value;
+  const role=document.getElementById('au-role')?.value;
+  const pos=document.getElementById('au-pos')?.value.trim();
+  const building=document.getElementById('au-building')?.value;
+  if(!name||!username||!pass){alert('กรุณากรอกชื่อ, Username และ Password');return;}
+  if(pass.length<6){alert('Password ต้องมีอย่างน้อย 6 ตัวอักษร');return;}
+  const users=JSON.parse(localStorage.getItem('cm_users')||'[]');
+  if(users.find(u=>u.username===username)){alert('Username นี้มีอยู่แล้ว');return;}
+  users.push({id:'CMU-'+Date.now(),username,name,pos,email,dept,role,building,bg:'commercial',
+    ph:btoa(pass),status:'approved',approvedBy:'Admin',regDate:new Date().toISOString()});
+  saveAllUsers(users);
+  closeModal('addUserModal');refreshAdminView();
+  showToast('✅ เพิ่มผู้ใช้ "'+name+'" สำเร็จ');
+}
+
+// ── CD Keys ──
+function generateCDKey(){
+  const type=document.getElementById('cdk-type')?.value||'INTERNAL';
+  const to=document.getElementById('cdk-to')?.value.trim()||'General';
+  const note=document.getElementById('cdk-note')?.value.trim()||'';
+  // SBS-XXXX-XXXX-XXXX format
+  const rand=()=>Math.random().toString(36).toUpperCase().slice(2,6).padEnd(4,'0');
+  const key='SBS-'+rand()+'-'+rand()+'-'+rand();
+  const keys=JSON.parse(localStorage.getItem('sbs_cdkeys')||'{}');
+  keys[key]={type,active:true,to,note,createdAt:new Date().toISOString(),createdBy:cmCurrentUser?.name||'Admin'};
+  localStorage.setItem('sbs_cdkeys',JSON.stringify(keys));
+  const resEl=document.getElementById('cdk-result');
+  if(resEl) resEl.innerHTML='<div style="background:var(--green-dim);border:1px solid var(--green);border-radius:var(--r);padding:12px"><div class="ff-d fw-6" style="font-size:12px;margin-bottom:4px">✅ CD Key สร้างแล้ว</div><div class="ff-m" style="font-size:16px;color:var(--orange);letter-spacing:2px">'+key+'</div><div style="font-size:10px;color:var(--text3);margin-top:4px">'+type+' · '+to+'</div></div>';
+  document.getElementById('cdk-to').value='';
+  document.getElementById('cdk-note').value='';
+  renderCDKeys();
+}
+
+function renderCDKeys(){
+  const keys=JSON.parse(localStorage.getItem('sbs_cdkeys')||'{}');
+  // Add built-in keys
+  const allKeys={...CM_CD_KEYS,...keys};
+  const el=document.getElementById('cdk-list');if(!el)return;
+  const entries=Object.entries(allKeys);
+  if(!entries.length){el.innerHTML='<div class="t-muted" style="text-align:center;padding:20px;font-size:12px">ยังไม่มี CD Key</div>';return;}
+  el.innerHTML=entries.map(([k,v])=>`
+    <div style="padding:8px 10px;border-radius:var(--r);margin-bottom:6px;background:${v.active?'var(--bg3)':'var(--bg4)'};border:1px solid ${v.active?'var(--border2)':'var(--border)'}">
+      <div class="ff-m" style="font-size:12px;color:var(--orange)">${k}</div>
+      <div style="font-size:10px;color:var(--text3);margin-top:2px">${v.type} · ${v.to}${v.note?' · '+v.note:''}</div>
+      <div style="display:flex;gap:6px;margin-top:6px">
+        <button class="btn btn-secondary btn-sm" style="font-size:10px" onclick="toggleCDKey('${k}')">${v.active?'🔴 ปิดใช้':'🟢 เปิดใช้'}</button>
+      </div>
+    </div>`).join('');
+}
+
+function toggleCDKey(key){
+  const keys=JSON.parse(localStorage.getItem('sbs_cdkeys')||'{}');
+  if(keys[key]) keys[key].active=!keys[key].active;
+  localStorage.setItem('sbs_cdkeys',JSON.stringify(keys));
+  renderCDKeys();
+}
+
+function switchAdmTab(tab,btn){
+  ['pending','approved','all','cdkey'].forEach(t=>{
+    const p=document.getElementById('adm-pane-'+t);if(p)p.style.display=t===tab?'':'none';
+  });
+  document.querySelectorAll('#adm-tabs .tab').forEach(b=>b.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  if(tab==='cdkey')renderCDKeys();
 }
 
 // ════ INIT ════
