@@ -1202,12 +1202,15 @@ select.form-control option{background:var(--bg3)}
 <div id="view-report" class="view">
   <div class="section-hdr"><div><div class="section-title">📈 Reports & Analytics</div><div class="section-sub">Export รายงาน · สรุปภาพรวม</div></div><button class="btn btn-primary btn-sm" onclick="generateReport()">📄 Generate Report</button></div>
   <div class="grid-3">
-    <div class="card" style="cursor:pointer;text-align:center;padding:24px" onclick="exportAssets()"><div style="font-size:32px;margin-bottom:8px">⚙</div><div class="ff-d fw-6">Asset Register</div><div class="t-muted" style="font-size:11px">Export Excel</div></div>
-    <div class="card" style="cursor:pointer;text-align:center;padding:24px" onclick="exportWR()"><div style="font-size:32px;margin-bottom:8px">🔧</div><div class="ff-d fw-6">Work Request</div><div class="t-muted" style="font-size:11px">Export Excel</div></div>
-    <div class="card" style="cursor:pointer;text-align:center;padding:24px" onclick="exportEnergy()"><div style="font-size:32px;margin-bottom:8px">⚡</div><div class="ff-d fw-6">Energy Report</div><div class="t-muted" style="font-size:11px">Export Excel</div></div>
-    <div class="card" style="cursor:pointer;text-align:center;padding:24px" onclick="exportInv()"><div style="font-size:32px;margin-bottom:8px">📦</div><div class="ff-d fw-6">Inventory</div><div class="t-muted" style="font-size:11px">Export Excel</div></div>
-    <div class="card" style="cursor:pointer;text-align:center;padding:24px" onclick="exportESG()"><div style="font-size:32px;margin-bottom:8px">🌱</div><div class="ff-d fw-6">ESG KPI</div><div class="t-muted" style="font-size:11px">Export PDF</div></div>
-    <div class="card" style="cursor:pointer;text-align:center;padding:24px" onclick="exportAccess()"><div style="font-size:32px;margin-bottom:8px">🔒</div><div class="ff-d fw-6">Security Log</div><div class="t-muted" style="font-size:11px">Export Excel</div></div>
+    <div class="card" data-rpt="rpt_assets"  style="cursor:pointer;text-align:center;padding:24px" onclick="exportAssets()"><div style="font-size:32px;margin-bottom:8px">⚙</div><div class="ff-d fw-6">Asset Register</div><div class="t-muted" style="font-size:11px">Export Excel</div></div>
+    <div class="card" data-rpt="rpt_wr"      style="cursor:pointer;text-align:center;padding:24px" onclick="exportWR()"><div style="font-size:32px;margin-bottom:8px">🔧</div><div class="ff-d fw-6">Work Request</div><div class="t-muted" style="font-size:11px">Export Excel</div></div>
+    <div class="card" data-rpt="rpt_wranalytic" style="cursor:pointer;text-align:center;padding:24px" onclick="exportAnalytics()"><div style="font-size:32px;margin-bottom:8px">📐</div><div class="ff-d fw-6">WR Analytics (MTTR)</div><div class="t-muted" style="font-size:11px">Export Excel</div></div>
+    <div class="card" data-rpt="rpt_wrcost"  style="cursor:pointer;text-align:center;padding:24px" onclick="exportWRCost()"><div style="font-size:32px;margin-bottom:8px">💰</div><div class="ff-d fw-6">WR Cost Efficiency</div><div class="t-muted" style="font-size:11px">Export Excel</div></div>
+    <div class="card" data-rpt="rpt_energy"  style="cursor:pointer;text-align:center;padding:24px" onclick="exportEnergy()"><div style="font-size:32px;margin-bottom:8px">⚡</div><div class="ff-d fw-6">Energy Report</div><div class="t-muted" style="font-size:11px">Export Excel</div></div>
+    <div class="card" data-rpt="rpt_inv"     style="cursor:pointer;text-align:center;padding:24px" onclick="exportInv()"><div style="font-size:32px;margin-bottom:8px">📦</div><div class="ff-d fw-6">Inventory</div><div class="t-muted" style="font-size:11px">Export Excel</div></div>
+    <div class="card" data-rpt="rpt_esg"     style="cursor:pointer;text-align:center;padding:24px" onclick="exportESG()"><div style="font-size:32px;margin-bottom:8px">🌱</div><div class="ff-d fw-6">ESG KPI</div><div class="t-muted" style="font-size:11px">Export PDF</div></div>
+    <div class="card" data-rpt="rpt_security" style="cursor:pointer;text-align:center;padding:24px" onclick="exportAccess()"><div style="font-size:32px;margin-bottom:8px">🔒</div><div class="ff-d fw-6">Security Log</div><div class="t-muted" style="font-size:11px">Export Excel</div></div>
+    <div class="card" data-rpt="rpt_ppm"     style="cursor:pointer;text-align:center;padding:24px" onclick="exportXLS(DB.get('ppm',[]),'PPM')"><div style="font-size:32px;margin-bottom:8px">📅</div><div class="ff-d fw-6">PPM Report</div><div class="t-muted" style="font-size:11px">Export Excel</div></div>
   </div>
 </div>
 
@@ -1545,7 +1548,9 @@ select.form-control option{background:var(--bg3)}
     <!-- Tabs -->
     <div class="tabs" id="ft-tabs" style="margin-bottom:14px">
       <div class="tab active" id="ftt-module"    onclick="switchFTTab('module')">🧩 Module Menu</div>
-      <div class="tab"        id="ftt-dashboard" onclick="switchFTTab('dashboard')">📊 Dashboard Widgets</div>
+      <div class="tab"        id="ftt-dashboard" onclick="switchFTTab('dashboard')">📊 Dashboard</div>
+      <div class="tab"        id="ftt-report"    onclick="switchFTTab('report')">📈 Reports</div>
+      <div class="tab"        id="ftt-building"  onclick="switchFTTab('building')">🏢 อาคาร</div>
     </div>
 
     <!-- Module Pane -->
@@ -1582,6 +1587,66 @@ select.form-control option{background:var(--bg3)}
         </div>
         <button class="btn btn-primary" onclick="saveDashSettings()">💾 บันทึก Dashboard</button>
       </div>
+    </div>
+
+    <!-- Report Pane -->
+    <div id="ft-pane-report" style="display:none">
+      <div style="font-size:11px;color:var(--text3);margin-bottom:12px">เลือก Report ที่ต้องการแสดงในหน้า Reports & Analytics</div>
+      <div id="report-toggle-list"></div>
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;margin-top:12px;font-size:11px;color:var(--text3)">
+        💡 ซ่อน Report ที่ยังไม่มีข้อมูล เช่น Energy, ESG, Security
+      </div>
+      <div class="flex gap-8 mt-14" style="justify-content:space-between">
+        <div class="flex gap-8">
+          <button class="btn btn-secondary btn-sm" onclick="setAllReports(true)">✅ เปิดทั้งหมด</button>
+          <button class="btn btn-secondary btn-sm" onclick="setAllReports(false)">❌ ปิดทั้งหมด</button>
+        </div>
+        <button class="btn btn-primary" onclick="saveReportSettings()">💾 บันทึก Reports</button>
+      </div>
+    </div>
+
+    <!-- Building Pane -->
+    <div id="ft-pane-building" style="display:none">
+      <div style="font-size:11px;color:var(--text3);margin-bottom:12px">จัดการรายชื่ออาคาร/Project ที่ดูแล — แสดงใน Dropdown บน Sidebar</div>
+
+      <!-- Add Building Form -->
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:12px;margin-bottom:14px">
+        <div class="ff-d fw-6" style="font-size:12px;margin-bottom:10px">➕ เพิ่มอาคารใหม่</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+          <div>
+            <div class="form-label">ชื่ออาคาร / Project *</div>
+            <input class="form-control" id="bld-name" placeholder="เช่น Park Ventures Ecoplex">
+          </div>
+          <div>
+            <div class="form-label">รหัสย่อ (ID) *</div>
+            <input class="form-control ff-m" id="bld-id" placeholder="เช่น PVE" style="text-transform:uppercase" oninput="this.value=this.value.toUpperCase()">
+          </div>
+          <div>
+            <div class="form-label">ประเภท</div>
+            <select class="form-control" id="bld-type">
+              <option value="Commercial">🏢 Commercial</option>
+              <option value="Office">🏬 Office</option>
+              <option value="Hotel">🏨 Hotel</option>
+              <option value="Residential">🏘 Residential</option>
+              <option value="Mixed">🏗 Mixed Use</option>
+              <option value="Industrial">🏭 Industrial</option>
+            </select>
+          </div>
+          <div>
+            <div class="form-label">Icon (Emoji)</div>
+            <input class="form-control" id="bld-icon" placeholder="🏢" maxlength="2" value="🏢">
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="form-label">ที่อยู่ / รายละเอียด</div>
+          <input class="form-control" id="bld-addr" placeholder="ที่อยู่หรือรายละเอียดเพิ่มเติม">
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="addBuilding()">➕ เพิ่มอาคาร</button>
+      </div>
+
+      <!-- Building List -->
+      <div class="ff-d fw-6" style="font-size:12px;margin-bottom:8px">📋 รายชื่ออาคารทั้งหมด</div>
+      <div id="building-list"></div>
     </div>
   </div>
 </div>
@@ -3928,7 +3993,179 @@ function clearAndShowLogin(){
 
 
 // กำหนด Module ทั้งหมด
-// ════ DASHBOARD WIDGET CONFIG ════
+// ════════════════════════════════════════════════════
+//  BUILDING MANAGEMENT
+// ════════════════════════════════════════════════════
+const BLD_KEY = 'cm_buildings';
+const DEFAULT_BUILDINGS = [
+  { id:'BHIRAJBURI', name:'BHIRAJBURI Commercial', icon:'🏢', type:'Commercial', addr:'', active:true, builtin:true },
+  { id:'TOWNSHIP',   name:'PSD Township Hub',      icon:'🏘', type:'Residential', addr:'', active:true, builtin:true },
+  { id:'BITEC',      name:'BITEC Bangna Hall',      icon:'🏛', type:'Commercial', addr:'', active:true, builtin:true },
+];
+
+function getBuildings(){
+  try{const s=JSON.parse(localStorage.getItem(BLD_KEY));if(s&&s.length>0)return s;}catch{}
+  return [...DEFAULT_BUILDINGS];
+}
+
+function saveBuildings(buildings){
+  localStorage.setItem(BLD_KEY,JSON.stringify(buildings));
+  syncToSheets('Config',{key:'cm_buildings',value:JSON.stringify(buildings),updatedBy:cmCurrentUser?.name||'Admin',updatedAt:new Date().toISOString()});
+}
+
+function addBuilding(){
+  const name=document.getElementById('bld-name')?.value.trim();
+  const id=document.getElementById('bld-id')?.value.trim().toUpperCase();
+  const type=document.getElementById('bld-type')?.value||'Commercial';
+  const icon=document.getElementById('bld-icon')?.value.trim()||'🏢';
+  const addr=document.getElementById('bld-addr')?.value.trim()||'';
+  if(!name||!id){alert('กรุณากรอกชื่ออาคารและรหัสย่อ');return;}
+  const buildings=getBuildings();
+  if(buildings.find(b=>b.id===id)){alert('รหัส "'+id+'" มีอยู่แล้ว');return;}
+  buildings.push({id,name,icon,type,addr,active:true,builtin:false,createdAt:new Date().toISOString()});
+  saveBuildings(buildings);
+  updateBuildingDropdowns();
+  renderBuildingList();
+  ['bld-name','bld-addr','bld-id'].forEach(eid=>{const el=document.getElementById(eid);if(el)el.value='';});
+  document.getElementById('bld-icon').value='🏢';
+  showToast('✅ เพิ่มอาคาร "'+name+'" สำเร็จ');
+}
+
+function toggleBuilding(id){
+  const buildings=getBuildings();
+  const b=buildings.find(x=>x.id===id);
+  if(b){b.active=!b.active;saveBuildings(buildings);renderBuildingList();updateBuildingDropdowns();}
+}
+
+function deleteBuilding(id){
+  const buildings=getBuildings();
+  const b=buildings.find(x=>x.id===id);
+  if(b?.builtin){alert('ไม่สามารถลบอาคารหลักได้');return;}
+  if(!confirm('ลบอาคาร "'+b?.name+'" ?'))return;
+  saveBuildings(buildings.filter(x=>x.id!==id));
+  renderBuildingList();updateBuildingDropdowns();
+  showToast('🗑 ลบอาคาร "'+b?.name+'" แล้ว');
+}
+
+function renderBuildingList(){
+  const buildings=getBuildings();
+  const el=document.getElementById('building-list');if(!el)return;
+  el.innerHTML=buildings.map(b=>{
+    const builtinBadge=b.builtin?'<span class="badge bg-orange" style="font-size:9px">Built-in</span>':'';
+    const delBtn=!b.builtin?('<button class="btn btn-danger btn-sm" onclick="deleteBuilding(this.dataset.id)" data-id="'+b.id+'" title="ลบ">🗑</button>'):'';
+    return '<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r);margin-bottom:6px;background:'+(b.active?'var(--bg3)':'var(--bg4)')+';border:1px solid '+(b.active?'var(--border2)':'var(--border)')+'">'
+      +'<div style="font-size:20px">'+b.icon+'</div>'
+      +'<div style="flex:1;min-width:0">'
+      +'<div style="font-size:12px;font-weight:600;color:var(--text)">'+b.name+' '+builtinBadge+'</div>'
+      +'<div style="font-size:10px;color:var(--text3)">'+b.type+' · ID: '+b.id+(b.addr?' · '+b.addr:'')+'</div>'
+      +'</div>'
+      +'<div style="display:flex;gap:6px;flex-shrink:0">'
+      +'<label class="toggle-switch"><input type="checkbox" '+(b.active?'checked':'')+' data-bid="'+b.id+'" onchange="toggleBuilding(this.dataset.bid)"><span class="toggle-slider"></span></label>'
+      +delBtn+'</div></div>';
+  }).join('');
+}
+
+function updateBuildingDropdowns(){
+  const buildings=getBuildings().filter(b=>b.active);
+  const sel=document.getElementById('building-sel');
+  if(sel){
+    const cur=sel.value;
+    sel.innerHTML=buildings.map(b=>'<option value="'+b.id+'">'+b.icon+' '+b.name+'</option>').join('');
+    if(buildings.find(b=>b.id===cur))sel.value=cur;
+  }
+  const regSel=document.getElementById('cm-reg-building');
+  if(regSel){
+    const curReg=regSel.value;
+    regSel.innerHTML='<option value="">-- เลือกอาคาร --</option>'+
+      buildings.map(b=>'<option value="'+b.name+'">'+b.icon+' '+b.name+'</option>').join('');
+    if(curReg)regSel.value=curReg;
+  }
+}
+
+// ════ REPORT ITEMS CONFIG ════
+const REPORT_ITEMS = [
+  { id:'rpt_assets',    label:'⚙ Asset Register',       desc:'ทะเบียนสินทรัพย์ · Export Excel',         defaultOn:true  },
+  { id:'rpt_wr',        label:'🔧 Work Request',         desc:'รายการแจ้งซ่อมทั้งหมด · Export Excel',    defaultOn:true  },
+  { id:'rpt_wranalytic',label:'📐 WR Analytics (MTTR)', desc:'MTTR · Maintainability · Export Excel',    defaultOn:true  },
+  { id:'rpt_wrcost',    label:'💰 WR Cost Efficiency',  desc:'ค่าใช้จ่ายการซ่อม · Export Excel',        defaultOn:true  },
+  { id:'rpt_energy',    label:'⚡ Energy Report',        desc:'รายงานพลังงาน · Export Excel',            defaultOn:false },
+  { id:'rpt_inv',       label:'📦 Inventory',            desc:'คลังวัสดุอุปกรณ์ · Export Excel',         defaultOn:false },
+  { id:'rpt_esg',       label:'🌱 ESG KPI',              desc:'รายงาน ESG · Export PDF',                 defaultOn:false },
+  { id:'rpt_security',  label:'🔒 Security Log',         desc:'บันทึกความปลอดภัย · Export Excel',        defaultOn:false },
+  { id:'rpt_ppm',       label:'📅 PPM Report',           desc:'รายงาน Preventive Maintenance',           defaultOn:true  },
+];
+const RPT_KEY = 'cm_reports';
+const RPT_SHEET_KEY = 'cm_report_settings';
+
+function getReports(){
+  try{const s=JSON.parse(localStorage.getItem(RPT_KEY));if(s&&Object.keys(s).length>0)return s;}catch{}
+  const def={};REPORT_ITEMS.forEach(r=>{def[r.id]=r.defaultOn;});return def;
+}
+
+function applyReportToggle(reports){
+  document.querySelectorAll('[data-rpt]').forEach(el=>{
+    el.style.display = reports[el.getAttribute('data-rpt')]!==false ? '' : 'none';
+  });
+}
+
+function renderReportToggle(){
+  const reports=getReports();
+  const list=document.getElementById('report-toggle-list');if(!list)return;
+  let html='';
+  REPORT_ITEMS.forEach(r=>{
+    const on=reports[r.id]!==false;
+    html+='<div style="display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border-radius:var(--r);margin-bottom:4px;background:'+(on?'var(--bg3)':'var(--bg4)')+';border:1px solid '+(on?'var(--border2)':'var(--border)')+'">'+
+      '<div><div style="font-size:12px;font-weight:600;color:var(--text)">'+r.label+'</div>'+
+      '<div style="font-size:10px;color:var(--text3);margin-top:2px">'+r.desc+'</div></div>'+
+      '<label class="toggle-switch" style="flex-shrink:0;margin-left:12px">'+
+      '<input type="checkbox" id="rpt-'+r.id+'" '+(on?'checked':'')+' data-id="'+r.id+'" onchange="updateRptPreview(this.dataset.id,this.checked)">'+
+      '<span class="toggle-slider"></span></label></div>';
+  });
+  list.innerHTML=html;
+}
+
+function updateRptPreview(id,val){
+  const row=document.querySelector('#rpt-'+id)?.closest('div[style*="border"]');
+  if(row){row.style.background=val?'var(--bg3)':'var(--bg4)';row.style.border='1px solid '+(val?'var(--border2)':'var(--border)');}
+}
+
+function setAllReports(val){
+  REPORT_ITEMS.forEach(r=>{const el=document.getElementById('rpt-'+r.id);if(el)el.checked=val;});
+}
+
+async function saveReportSettings(){
+  const reports={};
+  REPORT_ITEMS.forEach(r=>{const el=document.getElementById('rpt-'+r.id);reports[r.id]=el?el.checked:r.defaultOn;});
+  localStorage.setItem(RPT_KEY,JSON.stringify(reports));
+  applyReportToggle(reports);
+  closeModal('featureSettingsModal');
+  showToast('⏳ บันทึก Report Settings...');
+  const url=GASURL();
+  if(url){
+    try{
+      const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({action:'update',sheet:'Config',id:RPT_SHEET_KEY,
+          data:{key:RPT_SHEET_KEY,value:JSON.stringify(reports),updatedBy:cmCurrentUser?.name||'Admin',updatedAt:new Date().toISOString()}})});
+      const d=await r.json();
+      if(!d.ok)await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({action:'insert',sheet:'Config',
+          data:{key:RPT_SHEET_KEY,value:JSON.stringify(reports),updatedBy:cmCurrentUser?.name||'Admin',updatedAt:new Date().toISOString()}})});
+      showToast('✅ บันทึก Report Settings สำเร็จ — ทุกคนจะเห็นเหมือนกัน');
+    }catch(e){showToast('⚠ Local OK แต่ Sheets ไม่สำเร็จ');}
+  }else{showToast('✅ บันทึก Report Settings สำเร็จ');}
+}
+
+async function loadReportsFromSheets(){
+  const url=GASURL();if(!url)return getReports();
+  try{
+    const r=await fetch(`${url}?action=query&sheet=Config&filter=${encodeURIComponent(JSON.stringify({key:RPT_SHEET_KEY}))}`);
+    const d=await r.json();
+    if(d.ok&&d.data?.length>0){const rpts=JSON.parse(d.data[0].value||'{}');if(Object.keys(rpts).length>0){localStorage.setItem(RPT_KEY,JSON.stringify(rpts));return rpts;}}
+  }catch{}
+  return getReports();
+}
+
+
 const DASH_WIDGETS = [
   { id:'kpi_assets',   label:'⚙ Total Assets',        desc:'จำนวนอุปกรณ์อาคาร',          defaultOn:true  },
   { id:'kpi_wr',       label:'🔧 Open WR',             desc:'งานซ่อมค้าง',                 defaultOn:true  },
@@ -4167,11 +4404,13 @@ function openFeatureSettings(){
 }
 
 function switchFTTab(tab){
-  ['module','dashboard'].forEach(t=>{
+  ['module','dashboard','report','building'].forEach(t=>{
     document.getElementById('ftt-'+t)?.classList.toggle('active',t===tab);
     const p=document.getElementById('ft-pane-'+t);if(p)p.style.display=t===tab?'':'none';
   });
   if(tab==='dashboard') renderDashWidgets();
+  if(tab==='report') renderReportToggle();
+  if(tab==='building'){renderBuildingList();updateBuildingDropdowns();}
 }
 
 function renderDashWidgets(){
@@ -4246,6 +4485,11 @@ async function initFeatureToggle(isAdmin=false){
   // โหลด Dashboard widgets จาก Sheets
   const widgets = await loadDashFromSheets();
   applyDashWidgets(widgets);
+  // โหลด Report settings จาก Sheets
+  const reports = await loadReportsFromSheets();
+  applyReportToggle(reports);
+  // โหลด Buildings
+  updateBuildingDropdowns();
 }
 
 // ════ INIT ════
